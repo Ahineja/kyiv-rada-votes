@@ -5,7 +5,8 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <img
+      alt="Pet-project logo" class="logo" src="@/assets/crow-downhead-to-right.svg" width="225" height="225" />
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
@@ -20,15 +21,27 @@ import HelloWorld from './components/HelloWorld.vue'
   <RouterView />
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 header {
   line-height: 1.5;
   max-height: 100vh;
 }
 
 .logo {
+  position: relative;
   display: block;
-  margin: 0 auto 2rem;
+  margin: -2rem 0 -5rem -3rem;
+  bottom: 0;
+  left: 0;
+  transition: all 0.5s 0.1s ease-out;
+  z-index: 0;
+
+  &:hover {
+    transform: scale(1.2);
+    bottom: -100px;
+    left: 50px;
+    z-index: 1;
+  }
 }
 
 nav {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import DataBlock from './components/DataBlock.vue'
 </script>
 
 <template>
@@ -18,13 +19,14 @@ import HelloWorld from './components/HelloWorld.vue'
     </div>
   </header>
 
-  <RouterView />
+  <DataBlock />
+<!--  <RouterView />-->
 </template>
 
 <style scoped lang="scss">
 header {
   line-height: 1.5;
-  max-height: 100vh;
+  //max-height: 100vh;
 }
 
 .logo {
@@ -49,6 +51,7 @@ nav {
   font-size: 12px;
   text-align: center;
   margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 nav a.router-link-exact-active {

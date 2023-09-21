@@ -2,7 +2,7 @@
     <div class="data-block">
         <h2>{{ message }}</h2>
         <p>Count is: {{ counter.count }}</p>
-        <button @click="increment">Count is: {{ count }}</button>
+        <button @click="increment">Count is: {{ counter.count }}</button>
       <ul v-if="pytannia.length">
         <li
           class="data-block__item"
@@ -16,15 +16,28 @@
     </div>
 </template>
 
-<script>
-import { reactive, ref } from 'vue'
+<script lang="ts">
+// import { reactive, ref } from 'vue'
+import { reactive, toRefs } from 'vue';
 
 export default {
   name: 'DataBlock',
+  
+  setup () {
+    const state = reactive({
+      count: 0,
+    });
+  
+    return {
+      ...toRefs(state),
+    }
+  },
   data() {
     return {
       message: "Питання?!",
-      counter: { count: 0 },
+      counter: {
+        count: 0
+      },
       pytannia: []
     }
   },
@@ -35,10 +48,10 @@ export default {
       .catch( err => this.message = err.message )
   },
   methods: {
-    increment() {
-      this.counter.count++;
+    increment(): number {
+      return this.counter.count++;
     },
-    expandItem(text) {
+    expandItem(text: String) {
       console.log('-> ' + text); //tmp
     }
   }

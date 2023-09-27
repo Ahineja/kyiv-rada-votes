@@ -1,9 +1,15 @@
 <template>
     <div class="data-block">
         <h2>{{ message }}</h2>
-        <p>Count is: {{ counter.count }}</p>
-        <button @click="increment">Count is: {{ counter.count }}</button>
-      <ul v-if="pytannia.length">
+        <p>Count is: {{ counterInDataBlock.count }}</p>
+        <h6>counterInSetup is: {{ counterInSetup }}</h6>
+        <button @click="incrementButtonAction">Count is: {{ counterInDataBlock.count }}</button>
+        <button @click="incrementButtonInSetupAction">Count is: {{ counterInSetup }}</button>
+      <transition-group
+        name="dancing-quin"
+        tag="ul"
+        v-if="pytannia.length"
+      >
         <li
           class="data-block__item"
           v-for="item in pytannia"
@@ -12,30 +18,36 @@
         >
             <b>{{ item.innerId }}</b>:  {{ item.RESULT }}
         </li>
-      </ul>
+      </transition-group>
     </div>
 </template>
 
 <script lang="ts">
-// import { reactive, ref } from 'vue'
-import { reactive, toRefs } from 'vue';
+import { reactive, ref, toRefs } from 'vue';
+
+interface Pytannia {
+  GL_Text: string,
+  RESULT: string,
+  innerID: string
+}
 
 export default {
   name: 'DataBlock',
   
   setup () {
-    const state = reactive({
-      count: 0,
-    });
-  
-    return {
-      ...toRefs(state),
+    const counterInSetup = ref<number>(33);
+    const pytanniaList = ref<Pytannia[]>([]);
+
+    const incrementButtonInSetupAction = () => {
+      counterInSetup.value++;
     }
+
+    return { counterInSetup, pytanniaList, incrementButtonInSetupAction };
   },
   data() {
     return {
       message: "Питання?!",
-      counter: {
+      counterInDataBlock: {
         count: 0
       },
       pytannia: []
@@ -48,8 +60,8 @@ export default {
       .catch( err => this.message = err.message )
   },
   methods: {
-    increment(): number {
-      return this.counter.count++;
+    incrementButtonAction() {
+      this.counterInDataBlock.count++;
     },
     expandItem(text: String) {
       console.log('-> ' + text); //tmp

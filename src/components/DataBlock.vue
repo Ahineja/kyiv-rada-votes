@@ -5,91 +5,118 @@
         <h6>counterInSetup is: {{ counterInSetup }}</h6>
         <button @click="incrementButtonAction">Count is: {{ counterInDataBlock.count }}</button>
         <button @click="incrementButtonInSetupAction">Count is: {{ counterInSetup }}</button>
-      <transition-group
-        name="dancing-quin"
-        tag="ul"
-        v-if="pytannia.length"
-      >
-        <li
-          class="data-block__item"
-          v-for="item in pytannia"
-          :key="item.innerId"
-          @click="expandItem(item.GL_Text)"
+
+        <h2>If pytannia.length = {{ pytanniaList.length }}</h2>
+        <transition-group
+          name="dancing-quin"
+          class="data-block__list"
+          tag="ul"
+          v-if="pytanniaList.length"
         >
-            <b>{{ item.innerId }}</b>:  {{ item.RESULT }}
-        </li>
-      </transition-group>
+            <li
+                :class="{
+                    'data-block__item': true,
+                    'data-block__item_expanded': expandedItems[item.innerId],
+                }"
+                v-for="(item, index) in pytanniaList"
+                :key="item.innerId || index + 10000"
+                @click="expandItem(item.innerId)"
+            >
+                  <b v-if="item.innerId">{{ item.innerId }}</b>:  {{ item.GL_Text }}
+
+                  <br />
+
+                  <div
+                      v-if="expandedItems[item.innerId]"
+                      class="pytannia-block"
+                  >
+                      {{ getDPList(item) }}
+                  </div>
+            </li>
+        </transition-group>
     </div>
 </template>
 
-<script lang="ts">
-import { reactive, ref, toRefs } from 'vue';
+<script setup lang="ts">
+import { reactive, ref, onMounted } from 'vue';
+import type {DeputyVoiceModel, PytanniaModel} from "@/models/Pytannia.model.ts";
 
-interface Pytannia {
-  GL_Text: string,
-  RESULT: string,
-  innerID: string
+const counterInSetup = ref<number>(33);
+const pytanniaList = ref<PytanniaModel[]>([]);
+const message = ref("Питання?!");
+const counterInDataBlock = reactive({ count: 0 });
+const expandedItems = ref<Record<string, boolean>>({});
+
+const incrementButtonInSetupAction = () => {
+    counterInSetup.value++;
 }
 
-export default {
-  name: 'DataBlock',
-  
-  setup () {
-    const counterInSetup = ref<number>(33);
-    const pytanniaList = ref<Pytannia[]>([]);
+const incrementButtonAction = () => {
+    counterInDataBlock.count++;
+}
 
-    const incrementButtonInSetupAction = () => {
-      counterInSetup.value++;
+const expandItem = (innerId: string) => {
+    expandedItems.value[innerId] = !expandedItems.value[innerId];
+};
+
+const getDPList = (item: PytanniaModel) => {
+    let result: string[] = [];
+    if (!item.DPList) {
+        return "Nothing";
     }
 
-    return { counterInSetup, pytanniaList, incrementButtonInSetupAction };
-  },
-  data() {
-    return {
-      message: "Питання?!",
-      counterInDataBlock: {
-        count: 0
-      },
-      pytannia: []
-    }
-  },
-  mounted() {
+    item.DPList.map((deputy: DeputyVoiceModel, orderNumber: number) => {
+        result.push(`${orderNumber + 1}] ${deputy.DPName}: ${deputy.DPGolos}`);
+    });
+
+    return result.join(";\n");
+};
+
+onMounted(() => {
     fetch('http://localhost:2222/pytannia')
-      .then( res => res.json() )
-      .then( data => this.pytannia = data )
-      .catch( err => this.message = err.message )
-  },
-  methods: {
-    incrementButtonAction() {
-      this.counterInDataBlock.count++;
-    },
-    expandItem(text: String) {
-      console.log('-> ' + text); //tmp
-    }
-  }
-}
-
+        .then(res => res.json())
+        .then(data => {
+            pytanniaList.value = data || {};
+            console.log("fetch got data = ", pytanniaList.value); // tmp
+        })
+        .catch(err => message.value = err.message);
+});
 </script>
 
 <style scoped lang="scss">
 .data-block {
-  padding: 2rem 1.5rem;
-  color: brown;
-  font-size: larger;
-  background-color: orange;
+    position: relative;
+    padding: 2rem 1.5rem;
+    color: brown;
+    font-size: larger;
+    background-color: orange;
 
-  &__item {
-    cursor: pointer;
-    margin: 1rem 0.5rem;
-    border: 1px dotted darkolivegreen;
-    transition: all 400ms ease-out;
-
-    &:hover {
-      cursor: pointer;
-      border-style: solid;
-      border-color: limegreen;
-      transform: scale(1.1);
+    &__list {
+        position: relative;
+        list-style: none;
+        padding: 0;
     }
-  }
+
+    &__item {
+        position: relative;
+        cursor: pointer;
+        margin: 1rem 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 3px dotted darkred;
+        background-color: gold;
+        border-radius: 2px;
+        transition: all 400ms ease-out;
+
+        &:hover {
+            cursor: pointer;
+            border-style: dashed;
+        }
+
+        &_expanded {
+            border-style: solid;
+            background-color: PaleGoldenrod;
+            z-index: 2;
+        }
+    }
 }
 </style>

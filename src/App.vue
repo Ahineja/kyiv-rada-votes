@@ -20,7 +20,7 @@ import DataBlock from './components/DataBlock.vue'
   </header>
 
   <DataBlock />
-<!--  <RouterView />-->
+  <RouterView />
 </template>
 
 <style scoped lang="scss">
